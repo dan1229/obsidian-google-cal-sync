@@ -25,8 +25,8 @@ jobs:
 
       - name: Run the calendar sync script
         env:
-          GOOGLE_CALENDAR_DANIEL_PERSONAL: ${{ secrets.GOOGLE_CALENDAR_DANIEL_PERSONAL }}
-          GOOGLE_CALENDAR_DANIEL_EVENTS: ${{ secrets.GOOGLE_CALENDAR_DANIEL_EVENTS }}
+          GOOGLE_CALENDAR_PERSONAL: ${{ secrets.GOOGLE_CALENDAR_PERSONAL }}
+          GOOGLE_CALENDAR_EVENTS: ${{ secrets.GOOGLE_CALENDAR_EVENTS }}
           GOOGLE_CALENDAR_HOLIDAYS_US: ${{ secrets.GOOGLE_CALENDAR_HOLIDAYS_US }}
         run: |
           echo "Starting calendar sync at $(date -u '+%Y-%m-%d %H:%M:%S UTC')"
