@@ -7,11 +7,11 @@ import datetime
 import requests
 import icalendar  # type: ignore
 from zoneinfo import ZoneInfo
-from datetime import timedelta
 
 # Simple constants
 CALENDAR_HEADER = "### Calendar\n"
 TIMEZONE = ZoneInfo("America/New_York")
+
 
 def remove_calendar_section(content):
     """
@@ -43,11 +43,13 @@ def remove_calendar_section(content):
 
     return "\n".join(new_lines), removed_sections
 
+
 def insert_calendar_section(content, events_markdown):
     """
     Insert the new calendar section (CALENDAR_HEADER + events) at the top.
     """
     return CALENDAR_HEADER + events_markdown + "\n" + content
+
 
 def extract_date_from_filename(filename):
     """
@@ -63,6 +65,7 @@ def extract_date_from_filename(filename):
         return datetime.date(int(year), int(month), int(day))
     except ValueError:
         return None
+
 
 def format_events_as_markdown(events):
     """
@@ -84,6 +87,7 @@ def format_events_as_markdown(events):
 
     return "\n".join(lines) + "\n"
 
+
 def fetch_events_for_date(ics_url, target_date):
     """
     Fetch events from a single ICS URL, filter by the target_date.
@@ -100,7 +104,9 @@ def fetch_events_for_date(ics_url, target_date):
         return []
 
     cal = icalendar.Calendar.from_ical(response.content)
-    day_start = datetime.datetime.combine(target_date, datetime.time.min, tzinfo=TIMEZONE)
+    day_start = datetime.datetime.combine(
+        target_date, datetime.time.min, tzinfo=TIMEZONE
+    )
     day_end = datetime.datetime.combine(target_date, datetime.time.max, tzinfo=TIMEZONE)
 
     events_list = []
@@ -117,10 +123,18 @@ def fetch_events_for_date(ics_url, target_date):
         end_time = dtend.dt if dtend else start_time
 
         # Convert date objects to datetime if necessary
-        if isinstance(start_time, datetime.date) and not isinstance(start_time, datetime.datetime):
-            start_time = datetime.datetime.combine(start_time, datetime.time.min, tzinfo=TIMEZONE)
-        if isinstance(end_time, datetime.date) and not isinstance(end_time, datetime.datetime):
-            end_time = datetime.datetime.combine(end_time, datetime.time.min, tzinfo=TIMEZONE)
+        if isinstance(start_time, datetime.date) and not isinstance(
+            start_time, datetime.datetime
+        ):
+            start_time = datetime.datetime.combine(
+                start_time, datetime.time.min, tzinfo=TIMEZONE
+            )
+        if isinstance(end_time, datetime.date) and not isinstance(
+            end_time, datetime.datetime
+        ):
+            end_time = datetime.datetime.combine(
+                end_time, datetime.time.min, tzinfo=TIMEZONE
+            )
 
         # Force timezone if missing
         if start_time.tzinfo is None:
@@ -135,6 +149,7 @@ def fetch_events_for_date(ics_url, target_date):
             events_list.append((str(summary), start_time, end_time))
 
     return events_list
+
 
 def main():
     ics_url = os.getenv("MY_SIMPLE_ICS_URL", "")  # or hardcode a URL here
@@ -167,6 +182,7 @@ def main():
             # Save
             with open(file_path, "w", encoding="utf-8") as f:
                 f.write(updated_content)
+
 
 if __name__ == "__main__":
     main()

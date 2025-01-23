@@ -143,6 +143,7 @@ EVENT_KEYWORDS = {
 # 1. ICS FETCHING / PARSING
 # -------------------------------------------------------------------
 
+
 def clean_event(
     event, calendar_type, start_datetime, end_datetime, target_date, events_for_date
 ):
@@ -150,8 +151,12 @@ def clean_event(
 
     # Handle recurring events by checking if this instance occurs on target_date
     try:
-        target_start = datetime.datetime.combine(target_date, datetime.time.min, tzinfo=tz)
-        target_end = datetime.datetime.combine(target_date, datetime.time.max, tzinfo=tz)
+        target_start = datetime.datetime.combine(
+            target_date, datetime.time.min, tzinfo=tz
+        )
+        target_end = datetime.datetime.combine(
+            target_date, datetime.time.max, tzinfo=tz
+        )
 
         if hasattr(event, "recurring"):
             recurring_instances = of(event).at(target_start)
@@ -169,9 +174,13 @@ def clean_event(
         event_start = event.get("dtstart").dt
         event_end = event.get("dtend").dt if event.get("dtend") else event_start
 
-        if isinstance(event_start, datetime.date) and not isinstance(event_start, datetime.datetime):
+        if isinstance(event_start, datetime.date) and not isinstance(
+            event_start, datetime.datetime
+        ):
             event_start = datetime.datetime.combine(event_start, datetime.time.min)
-        if isinstance(event_end, datetime.date) and not isinstance(event_end, datetime.datetime):
+        if isinstance(event_end, datetime.date) and not isinstance(
+            event_end, datetime.datetime
+        ):
             event_end = datetime.datetime.combine(event_end, datetime.time.min)
     except (AttributeError, KeyError) as e:
         logger.error(f"Event missing begin/end time: {str(event)}.\n{e}")
@@ -224,7 +233,9 @@ def fetch_events_for_date(ics_urls_with_types, target_date):
     events_for_date = []
     tz = ZoneInfo("America/New_York")
 
-    start_datetime = datetime.datetime.combine(target_date, datetime.time.min, tzinfo=tz)
+    start_datetime = datetime.datetime.combine(
+        target_date, datetime.time.min, tzinfo=tz
+    )
     end_datetime = datetime.datetime.combine(target_date, datetime.time.max, tzinfo=tz)
 
     # Look back 1 year and forward 2 years from target date for recurring events
@@ -276,6 +287,7 @@ def fetch_events_for_date(ics_urls_with_types, target_date):
 # -------------------------------------------------------------------
 # 2. NOTE UPDATING
 # -------------------------------------------------------------------
+
 
 def remove_all_calendar_sections(content):
     """
@@ -358,7 +370,9 @@ def format_events_as_markdown(events_with_types):
             event_text = f"[{event_name}]({evt.get('url')})"
         else:
             search_query = event_name.replace(" ", "+")
-            google_cal_link = f"https://calendar.google.com/calendar/u/0/r/search?q={search_query}"
+            google_cal_link = (
+                f"https://calendar.google.com/calendar/u/0/r/search?q={search_query}"
+            )
             event_text = f"[{event_name}]({google_cal_link})"
 
         # Handle location
@@ -380,7 +394,9 @@ def format_events_as_markdown(events_with_types):
             else:
                 clean_location = " ".join(location.replace("\n", " ").split())
                 maps_query = clean_location.replace(" ", "+")
-                maps_link = f"https://www.google.com/maps/search/?api=1&query={maps_query}"
+                maps_link = (
+                    f"https://www.google.com/maps/search/?api=1&query={maps_query}"
+                )
                 location_details.append(f"📍 [{clean_location}]({maps_link})")
 
         # Handle description for possible meeting links
@@ -433,7 +449,7 @@ def insert_calendar_at_top(note_content, events_md):
         return HEADER_CALENDAR_EVENTS + "\n" + events_md + note_content
 
     before = lines[: table_end_idx + 1]
-    after = lines[table_end_idx + 1 :]
+    after = lines[table_end_idx + 1 :]  # noqa: E203
     return (
         "\n".join(before)
         + "\n\n"
@@ -473,6 +489,7 @@ def update_note(file_path, events):
 # -------------------------------------------------------------------
 # 3. MAIN LOGIC
 # -------------------------------------------------------------------
+
 
 def extract_date_from_filename(filename):
     """
